@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VCSAX VPN</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Шапка сайта */
+        header {
+            text-align: center;
+            padding: 40px 20px 30px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, #4facfe, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.85;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Основное содержимое */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 5;
+            padding: 20px 0 60px;
+        }
+        
+        /* Кнопки */
+        .buttons-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 50px;
+        }
+        
+        .main-btn {
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.4s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+            z-index: 2;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            min-width: 250px;
+            justify-content: center;
+        }
+        
+        .btn-download {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+        }
+        
+        .btn-activate {
+            background: linear-gradient(45deg, #0f9d58, #00c853);
+        }
+        
+        .btn-instruction {
+            background: linear-gradient(45deg, #2193b0, #6dd5ed);
+        }
+        
+        .main-btn:hover {
+            transform: translateY(-7px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        .main-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .main-btn i {
+            font-size: 1.5rem;
+        }
+        
+        /* Модальные окна */
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.95);
+            background: rgba(25, 35, 70, 0.98);
+            border-radius: 25px;
+            padding: 30px;
+            width: 95%;
+            max-width: 500px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(15px);
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(100, 150, 255, 0.3);
+        }
+        
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        .modal-header h2 {
+            font-size: 1.8rem;
+            background: linear-gradient(90deg, #4facfe, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .close-btn {
+            background: rgba(255, 255, 255, 0.12);
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .close-btn:hover {
+            background: rgba(255, 65, 108, 0.7);
+            transform: rotate(90deg);
+        }
+        
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        
+        .option-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            padding: 20px 25px;
+            border-radius: 15px;
+            color: #fff;
+            font-size: 1.2rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .option-btn:hover {
+            background: rgba(100, 150, 255, 0.3);
+            transform: translateX(10px);
+        }
+        
+        .option-btn i {
+            font-size: 1.6rem;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+        
+        .option-1 i { background: rgba(79, 172, 254, 0.3); }
+        .option-2 i { background: rgba(0, 200, 83, 0.3); }
+        .option-3 i { background: rgba(255, 65, 108, 0.3); }
+        
+        /* Инструкция */
+        .instruction-content {
+            max-height: 60vh;
+            overflow-y: auto;
+            padding-right: 15px;
+        }
+        
+        .instruction-content h3 {
+            margin: 20px 0 10px;
+            color: #4facfe;
+        }
+        
+        .instruction-content p {
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+        
+        .instruction-content ol {
+            padding-left: 25px;
+            margin-bottom: 20px;
+        }
+        
+        .instruction-content li {
+            margin-bottom: 10px;
+        }
+        
+        /* Затемнение фона */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 90;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s;
+        }
+        
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Особенности сервиса */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            width: 100%;
+            margin-top: 40px;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(100, 150, 255, 0.3);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .feature-card i {
+            font-size: 3.5rem;
+            margin-bottom: 25px;
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .feature-card p {
+            opacity: 0.85;
+            line-height: 1.6;
+            font-size: 1.05rem;
+        }
+        
+        /* Подвал сайта */
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            background: rgba(0, 0, 0, 0.25);
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.95rem;
+            opacity: 0.8;
+        }
+        
+        /* Анимации фона */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: float 15s infinite linear;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 0.5;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+                opacity: 0;
+            }
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 900px) {
+            .buttons-container {
+                gap: 15px;
+            }
+            
+            .main-btn {
+                min-width: 200px;
+                padding: 18px 30px;
+                font-size: 1.2rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                padding: 30px 15px 20px;
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            header p {
+                font-size: 1rem;
+            }
+            
+            .buttons-container {
+                flex-direction: column;
+                gap: 15px;
+                padding: 0 10px;
+            }
+            
+            .main-btn {
+                width: 100%;
+                max-width: 400px;
+                padding: 18px 25px;
+                font-size: 1.2rem;
+            }
+            
+            .modal {
+                padding: 25px 20px;
+                border-radius: 20px;
+            }
+            
+            .modal-header h2 {
+                font-size: 1.6rem;
+            }
+            
+            .option-btn {
+                padding: 18px 20px;
+                font-size: 1.1rem;
+                gap: 15px;
+            }
+            
+            .option-btn i {
+                width: 45px;
+                height: 45px;
+                font-size: 1.4rem;
+            }
+            
+            .feature-card {
+                padding: 25px 20px;
+            }
+            
+            .feature-card i {
+                font-size: 3rem;
+            }
+            
+            .feature-card h3 {
+                font-size: 1.3rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+            
+            header p {
+                font-size: 0.95rem;
+            }
+            
+            .modal-header h2 {
+                font-size: 1.4rem;
+            }
+            
+            .instruction-content {
+                font-size: 0.95rem;
+            }
+            
+            .instruction-content h3 {
+                font-size: 1.2rem;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .feature-card {
+                padding: 22px 18px;
+            }
+            
+            .feature-card i {
+                font-size: 2.8rem;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Анимированные частицы фона -->
+    <div class="particles" id="particles"></div>
+    
+    <div class="container">
+        <!-- Шапка сайта -->
+        <header>
+            <h1>VCSAX VPN</h1>
+            <p>Мгновенная активация и безопасный доступ к интернету</p>
+        </header>
+        
+        <!-- Основное содержимое -->
+        <main class="main-content">
+            <!-- Контейнер с кнопками -->
+            <div class="buttons-container">
+                <button class="main-btn btn-download" id="downloadBtn">
+                    <i class="fas fa-download"></i> СКАЧАТЬ
+                </button>
+                <button class="main-btn btn-activate" id="activateBtn">
+                    <i class="fas fa-bolt"></i> АКТИВИРОВАТЬ
+                </button>
+                <button class="main-btn btn-instruction" id="instructionBtn">
+                    <i class="fas fa-book"></i> ИНСТРУКЦИЯ
+                </button>
+            </div>
+            
+            <!-- Особенности сервиса -->
+            <div class="features">
+                <div class="feature-card">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>РОСКОМНАДЗОРУ-НЕТ!</h3>
+                    <p>Все блокировки будут сняты!</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <h3>Высокая скорость</h3>
+                    <p>Оптимизированные серверы обеспечивают высокую скорость</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-globe"></i>
+                    <h3>Полный доступ</h3>
+                    <p>Обходите географические ограничения и цензуру в любом месте</p>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Модальные окна -->
+    
+    <!-- Меню активации -->
+    <div class="modal" id="activateMenu">
+        <div class="modal-header">
+            <h2>Варианты активации</h2>
+            <button class="close-btn" id="closeActivateMenu">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="options-grid">
+            <button class="option-btn option-1" id="activateVpn">
+                <i class="fas fa-shield-alt"></i>
+                <span>Для Android</span>
+            </button>
+            <button class="option-btn option-2" id="getConfig">
+                <i class="fas fa-code"></i>
+                <span>Для ПК</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Меню скачивания -->
+    <div class="modal" id="downloadMenu">
+        <div class="modal-header">
+            <h2>Скачать приложение</h2>
+            <button class="close-btn" id="closeDownloadMenu">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="options-grid">
+            <button class="option-btn option-1" id="downloadPc">
+                <i class="fas fa-desktop"></i>
+                <span>Скачать для Windows</span>
+            </button>
+            <button class="option-btn option-2" id="downloadAndroid">
+                <i class="fab fa-android"></i>
+                <span>Скачать для Android</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Инструкция -->
+    <div class="modal" id="instructionModal">
+        <div class="modal-header">
+            <h2>Инструкция по использованию</h2>
+            <button class="close-btn" id="closeInstruction">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="instruction-content">
+            <h3>Как активировать VPN</h3>
+            <p>Скачайте приложение с сайта</p>
+            <p>Выберите сервер</p>
+            <p>Активируйте впн в приложении</p>
+        </div>
+    </div>
+    
+    <!-- Затемнение фона при открытом меню -->
+    <div class="overlay" id="overlay"></div>
+    
+    <!-- Подвал сайта -->
+    <footer>
+        <p>t.me/vcsaxvpn</p>
+    </footer>
+
+    <script>
+        // Элементы DOM
+        const activateBtn = document.getElementById('activateBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const instructionBtn = document.getElementById('instructionBtn');
+        
+        const activateMenu = document.getElementById('activateMenu');
+        const downloadMenu = document.getElementById('downloadMenu');
+        const instructionModal = document.getElementById('instructionModal');
+        
+        const closeActivateMenu = document.getElementById('closeActivateMenu');
+        const closeDownloadMenu = document.getElementById('closeDownloadMenu');
+        const closeInstruction = document.getElementById('closeInstruction');
+        
+        const overlay = document.getElementById('overlay');
+        
+        const activateVpn = document.getElementById('activateVpn');
+        const getConfig = document.getElementById('getConfig');
+        const downloadPc = document.getElementById('downloadPc');
+        const downloadAndroid = document.getElementById('downloadAndroid');
+        
+        // Ссылки для перехода (замените на свои)
+        const activationLink = "v2raytun://import/https://vcsaxxx.github.io/import/";
+        const configLink = "v2raytun://import/https://vcsaxxx.github.io/import/";
+        const pcDownloadLink = "https://www.dropbox.com/scl/fi/2uyjb138feziiziy5go6q/v2RayTun_Setup.exe?rlkey=u94t67xjvo594onl33k71lybr&st=wel9hr2g&dl=1";
+        const androidDownloadLink = "https://play.google.com/store/apps/details?id=com.v2raytun.android";
+        
+        // Функция для открытия модального окна
+        function openModal(modal) {
+            modal.classList.add('active');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // Функция для закрытия всех модальных окон
+        function closeAllModals() {
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.classList.remove('active');
+            });
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        
+        // Открытие меню активации
+        activateBtn.addEventListener('click', () => {
+            openModal(activateMenu);
+        });
+        
+        // Открытие меню скачивания
+        downloadBtn.addEventListener('click', () => {
+            openModal(downloadMenu);
+        });
+        
+        // Открытие инструкции
+        instructionBtn.addEventListener('click', () => {
+            openModal(instructionModal);
+        });
+        
+        // Закрытие модальных окон
+        closeActivateMenu.addEventListener('click', closeAllModals);
+        closeDownloadMenu.addEventListener('click', closeAllModals);
+        closeInstruction.addEventListener('click', closeAllModals);
+        overlay.addEventListener('click', closeAllModals);
+        
+        // Переход по ссылкам активации
+        activateVpn.addEventListener('click', () => {
+            window.location.href = activationLink;
+        });
+        
+        getConfig.addEventListener('click', () => {
+            window.location.href = configLink;
+        });
+        
+        // Переход по ссылкам скачивания
+        downloadPc.addEventListener('click', () => {
+            window.location.href = pcDownloadLink;
+        });
+        
+        downloadAndroid.addEventListener('click', () => {
+            window.location.href = androidDownloadLink;
+        });
+        
+        // Создание анимированных частиц фона
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const particleCount = window.innerWidth < 768 ? 30 : 50;
+            const colors = ['#4facfe', '#00f2fe', '#ff416c', '#0f9d58'];
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Случайная позиция
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                particle.style.left = `${posX}vw`;
+                particle.style.top = `${posY}vh`;
+                
+                // Случайный размер
+                const size = Math.random() * 6 + 2;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // Случайный цвет
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.backgroundColor = color;
+                
+                // Случайная задержка анимации
+                const delay = Math.random() * 15;
+                particle.style.animationDelay = `${delay}s`;
+                
+                // Случайная длительность анимации
+                const duration = 10 + Math.random() * 20;
+                particle.style.animationDuration = `${duration}s`;
+                
+                document.querySelector('.particles').appendChild(particle);
+            }
+        }
+        
+        // Инициализация при загрузке страницы
+        window.addEventListener('load', () => {
+            createParticles();
+            
+            // Анимация кнопки активации
+            const animateActivateBtn = () => {
+                activateBtn.style.transform = 'scale(1.05)';
+                setTimeout(() => {
+                    activateBtn.style.transform = 'scale(1)';
+                }, 300);
+            };
+            
+            // Пульсация кнопки активации каждые 3 секунды
+            setInterval(animateActivateBtn, 3000);
+        });
+        
+        // Закрытие меню при нажатии Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeAllModals();
+            }
+        });
+        
+        // Эффект наведения для кнопки активации
+        activateBtn.addEventListener('mouseenter', () => {
+            activateBtn.style.boxShadow = '0 0 30px rgba(15, 157, 88, 0.8)';
+        });
+        
+        activateBtn.addEventListener('mouseleave', () => {
+            activateBtn.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.3)';
+        });
+    </script>
+</body>
+</html>
+
